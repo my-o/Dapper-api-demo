@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 using Dapper;
+using System.Threading.Tasks;
 
 namespace DapperApi.Services
 {
@@ -17,13 +18,13 @@ namespace DapperApi.Services
         }
 
         // user for buffered queries that return a type
-        protected T WithConnection<T>(Func<IDbConnection, T> getData)
+        protected async Task<T> WithConnection<T>(Func<IDbConnection, Task<T>> getData)
         {
             try
             {
-                using var connection = new SqlConnection(_connectionString);
+                await using var connection = new SqlConnection(_connectionString);
                 connection.Open();
-                return getData(connection);
+                return await getData(connection);
             }
             catch (TimeoutException ex)
             {
@@ -36,11 +37,11 @@ namespace DapperApi.Services
         }
 
         // use for buffered queries that do not return a type
-        protected void WithConnection(Action<IDbConnection> getData)
+        protected async Task WithConnection(Action<IDbConnection> getData)
         {
             try
             {
-                using var connection = new SqlConnection(_connectionString);
+                await using var connection = new SqlConnection(_connectionString);
                 connection.Open();
                 getData(connection);
             }
@@ -55,14 +56,14 @@ namespace DapperApi.Services
         }
 
         // use for non-buffered queries that return a type
-        protected TResult WithConnection<TRead, TResult>(Func<IDbConnection, TRead> getData, Func<TRead, TResult> process)
+        protected async Task<TResult> WithConnection<TRead, TResult>(Func<IDbConnection, Task<TRead>> getData, Func<TRead, Task<TResult>> process)
         {
             try
             {
-                using var connection = new SqlConnection(_connectionString);
+                await using var connection = new SqlConnection(_connectionString);
                 connection.Open();
-                var data = getData(connection);
-                return process(data);
+                var data = await getData(connection);
+                return await process(data);
             }
             catch (TimeoutException ex)
             {

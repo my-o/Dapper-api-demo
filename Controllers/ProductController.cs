@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using DapperApi.Models;
 using DapperApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,37 +17,37 @@ namespace DapperApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<Product> GetProducts()
+        public async Task<ActionResult<Product>> GetProducts()
         {
-            var products = _productRepository.GetProducts();
+            var products = await _productRepository.GetProducts();
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Product> GetProductById(int id)
+        public async Task<ActionResult<Product>> GetProductById(int id)
         {
-            var product = _productRepository.GetProductById(id);
+            var product = await _productRepository.GetProductById(id);
             return Ok(product);
         }
 
         [HttpPost]
-        public ActionResult AddProduct(Product entity)
+        public async Task<ActionResult> AddProduct(Product entity)
         {
-            _productRepository.AddProduct(entity);
+            await _productRepository.AddProduct(entity);
             return Ok(entity);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Product> UpdateProduct(Product entity, int id)
+        public async Task<ActionResult<Product>> UpdateProduct(Product entity, int id)
         {
-            _productRepository.UpdateProduct(entity, id);
+            await _productRepository.UpdateProduct(entity, id);
             return Ok(entity);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            _productRepository.RemoveProduct(id);
+            await _productRepository.RemoveProduct(id);
             return Ok();
         }
     }

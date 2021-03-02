@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Dapper;
 using DapperApi.Models;
 using DapperApi.Services.Queries;
@@ -15,48 +16,48 @@ namespace DapperApi.Services
             _commandText = commandText;
         }
 
-        public IEnumerable<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
-            return WithConnection(conn =>
+            return await WithConnection(conn =>
             {
-                var query = conn.Query<Product>(_commandText.GetProducts);
+                var query = conn.QueryAsync<Product>(_commandText.GetProducts);
                 return query;
             });
         }
 
-        public Product GetProductById(int id)
+        public async Task<Product> GetProductById(int id)
         {
-            return WithConnection(conn =>
+            return await WithConnection(conn =>
             {
-                var query = conn.QueryFirstOrDefault<Product>(_commandText.GetProductById,
+                var query = conn.QueryFirstOrDefaultAsync<Product>(_commandText.GetProductById,
                     new{ Id = id });
                 return query;
             });
         }
 
-        public void AddProduct(Product entity)
+        public async Task AddProduct(Product entity)
         {
-            WithConnection(conn =>
+            await WithConnection(conn =>
             {
-                conn.Execute(_commandText.AddProduct,
+                conn.ExecuteAsync(_commandText.AddProduct,
                     new { Name = entity.Name, Cost = entity.Cost, CreatedDate = entity.CreatedDate });
             });
         }
 
-        public void UpdateProduct(Product entity, int id)
+        public async Task UpdateProduct(Product entity, int id)
         {
-            WithConnection(conn =>
+            await WithConnection(conn =>
             {
-                conn.Execute(_commandText.UpdateProduct,
+                conn.ExecuteAsync(_commandText.UpdateProduct,
                     new Product(){ Name = entity.Name, Cost = entity.Cost, Id = id });
             });
         }
 
-        public void RemoveProduct(int id)
+        public async Task RemoveProduct(int id)
         {
-            WithConnection(conn =>
+            await WithConnection(conn =>
             {
-                conn.Execute(_commandText.RemoveProduct,
+                conn.ExecuteAsync(_commandText.RemoveProduct,
                     new { Id = id });
             });
         }

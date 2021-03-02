@@ -1,14 +1,15 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DapperApi.Models;
 
 namespace DapperApi.Services
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> GetProducts();
-        Product GetProductById(int id);
-        void AddProduct(Product entity);
-        void UpdateProduct(Product entity, int id);
-        void RemoveProduct(int it);
+        Task<IEnumerable<Product>> GetProducts();
+        Task<Product> GetProductById(int id);
+        Task AddProduct(Product entity);
+        Task UpdateProduct(Product entity, int id);
+        Task RemoveProduct(int it);
     }
 }
